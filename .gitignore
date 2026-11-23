@@ -1,0 +1,11 @@
+# local credentials / environment - never commit
+.env
+.pgpass
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
