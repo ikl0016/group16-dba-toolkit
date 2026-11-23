@@ -1,0 +1,28 @@
+DELETE 0
+DELETE 0
+ query_id | median_exec_ms |  root_node   | buffers 
+----------+----------------+--------------+---------
+ Q1       |         32.422 | Gather Merge |   10418
+ Q2       |         97.370 | Aggregate    |   10346
+ Q3       |         35.238 | Limit        |   10418
+ Q4       |         36.793 | Aggregate    |   10418
+ Q5       |        272.886 | Gather Merge |   32650
+ Q6       |        260.273 | Sort         |   32760
+ Q7       |         64.965 | Aggregate    |   11614
+(7 rows)
+
+ insert_ms_baseline 
+--------------------
+         647.448000
+(1 row)
+
+  tablename  |      indexname      |                                       indexdef                                       
+-------------+---------------------+--------------------------------------------------------------------------------------
+ customers   | customers_email_key | CREATE UNIQUE INDEX customers_email_key ON shop.customers USING btree (email)
+ customers   | customers_pkey      | CREATE UNIQUE INDEX customers_pkey ON shop.customers USING btree (customer_id)
+ order_items | order_items_pkey    | CREATE UNIQUE INDEX order_items_pkey ON shop.order_items USING btree (order_item_id)
+ orders      | orders_pkey         | CREATE UNIQUE INDEX orders_pkey ON shop.orders USING btree (order_id)
+ products    | products_pkey       | CREATE UNIQUE INDEX products_pkey ON shop.products USING btree (product_id)
+ products    | products_sku_key    | CREATE UNIQUE INDEX products_sku_key ON shop.products USING btree (sku)
+(6 rows)
+

@@ -1,0 +1,15 @@
+check_label,predicate,estimated,actual,q_error
+before_ext_stats,status = 'delivered',957873,941094,1.02
+before_ext_stats,status = 'pending',3292,3113,1.06
+before_ext_stats,status = 'cancelled',29151,29562,1.01
+before_ext_stats,customer_id = 4242,11,9,1.22
+before_ext_stats,order_date >= '2026-10-01' AND order_date < '2026-10-08',4459,5019,1.13
+before_ext_stats,ship_city = 'Dallas',25418,25222,1.01
+before_ext_stats,ship_state = 'TX',127836,124399,1.03
+before_ext_stats,ship_city = 'Dallas' AND ship_state = 'TX',3192,25222,7.90
+before_ext_stats,ship_city = 'Dallas' AND ship_state = 'AZ',3144,0,3144.00
+stale_1_fresh_stats,status = 'pending',2633,3113,1.18
+stale_2_after_bulk_insert,status = 'pending',2990,153113,51.21
+stale_3_after_analyze,status = 'pending',149768,153113,1.02
+after_ext_stats,ship_city = 'Dallas' AND ship_state = 'TX',24900,25222,1.01
+after_ext_stats,ship_city = 'Dallas' AND ship_state = 'AZ',1,0,1.00

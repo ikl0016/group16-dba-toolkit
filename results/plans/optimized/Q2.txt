@@ -1,0 +1,15 @@
+Finalize Aggregate  (cost=18704.48..18704.49 rows=1 width=40) (actual time=87.370..89.741 rows=1 loops=1)
+  Buffers: shared hit=10533
+  ->  Gather  (cost=18704.25..18704.46 rows=2 width=40) (actual time=85.474..89.721 rows=3 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=10533
+        ->  Partial Aggregate  (cost=17704.25..17704.26 rows=1 width=40) (actual time=81.628..81.629 rows=1 loops=3)
+              Buffers: shared hit=10533
+              ->  Parallel Seq Scan on orders  (cost=0.00..15741.33 rows=392583 width=6) (actual time=0.007..47.895 rows=313698 loops=3)
+                    Filter: (status = 'delivered'::text)
+                    Rows Removed by Filter: 19635
+                    Buffers: shared hit=10533
+Planning Time: 0.130 ms
+Execution Time: 89.778 ms
+

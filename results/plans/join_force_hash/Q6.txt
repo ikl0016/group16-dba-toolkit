@@ -1,0 +1,45 @@
+Sort  (cost=50355.54..50355.57 rows=12 width=47) (actual time=261.923..264.807 rows=12 loops=1)
+  Sort Key: (sum(((oi.quantity)::numeric * oi.unit_price))) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=13685 read=13375
+  ->  GroupAggregate  (cost=48712.79..50355.32 rows=12 width=47) (actual time=256.063..264.792 rows=12 loops=1)
+        Group Key: p.category
+        Buffers: shared hit=13685 read=13375
+        ->  Gather Merge  (cost=48712.79..50195.99 rows=12735 width=25) (actual time=255.683..260.830 rows=13345 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=13685 read=13375
+              ->  Sort  (cost=47712.76..47726.03 rows=5306 width=25) (actual time=233.341..233.665 rows=4448 loops=3)
+                    Sort Key: p.category, o.order_id
+                    Sort Method: quicksort  Memory: 511kB
+                    Buffers: shared hit=13685 read=13375
+                    Worker 0:  Sort Method: quicksort  Memory: 541kB
+                    Worker 1:  Sort Method: quicksort  Memory: 112kB
+                    ->  Hash Join  (cost=8338.98..47384.50 rows=5306 width=25) (actual time=224.699..230.220 rows=4448 loops=3)
+                          Hash Cond: (oi.product_id = p.product_id)
+                          Buffers: shared hit=13653 read=13375
+                          ->  Parallel Hash Join  (cost=8179.48..47211.06 rows=5306 width=22) (actual time=222.243..225.383 rows=4448 loops=3)
+                                Hash Cond: (oi.order_id = o.order_id)
+                                Buffers: shared hit=13418 read=13375
+                                ->  Parallel Seq Scan on order_items oi  (cost=0.00..35686.00 rows=1274500 width=22) (actual time=0.017..99.300 rows=1000000 loops=3)
+                                      Buffers: shared hit=9566 read=13375
+                                ->  Parallel Hash  (cost=8157.42..8157.42 rows=1765 width=8) (actual time=2.121..2.123 rows=1482 loops=3)
+                                      Buckets: 8192  Batches: 1  Memory Usage: 256kB
+                                      Buffers: shared hit=3822
+                                      ->  Parallel Bitmap Heap Scan on orders o  (cost=81.26..8157.42 rows=1765 width=8) (actual time=1.612..5.772 rows=4445 loops=1)
+                                            Recheck Cond: (order_date >= '2026-10-25 00:00:00'::timestamp without time zone)
+                                            Heap Blocks: exact=3718
+                                            Buffers: shared hit=3822
+                                            ->  Bitmap Index Scan on idx_orders_order_date  (cost=0.00..80.20 rows=4237 width=0) (actual time=1.173..1.173 rows=24445 loops=1)
+                                                  Index Cond: (order_date >= '2026-10-25 00:00:00'::timestamp without time zone)
+                                                  Buffers: shared hit=104
+                          ->  Hash  (cost=97.00..97.00 rows=5000 width=11) (actual time=2.385..2.385 rows=5000 loops=3)
+                                Buckets: 8192  Batches: 1  Memory Usage: 284kB
+                                Buffers: shared hit=141
+                                ->  Seq Scan on products p  (cost=0.00..97.00 rows=5000 width=11) (actual time=0.007..1.779 rows=5000 loops=3)
+                                      Buffers: shared hit=141
+Planning:
+  Buffers: shared hit=4
+Planning Time: 0.221 ms
+Execution Time: 264.868 ms
+

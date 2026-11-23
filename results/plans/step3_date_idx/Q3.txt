@@ -1,0 +1,9 @@
+Limit  (cost=0.42..1145.00 rows=50 width=20) (actual time=487.172..487.247 rows=50 loops=1)
+  Buffers: shared hit=993132
+  ->  Index Scan using idx_orders_order_date on orders  (cost=0.42..70208.50 rows=3067 width=20) (actual time=487.171..487.241 rows=50 loops=1)
+        Filter: (status = 'pending'::text)
+        Rows Removed by Filter: 990666
+        Buffers: shared hit=993132
+Planning Time: 0.098 ms
+Execution Time: 487.264 ms
+

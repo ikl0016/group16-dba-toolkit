@@ -1,0 +1,39 @@
+Sort  (cost=31499.62..31499.65 rows=12 width=47) (actual time=59.416..60.763 rows=12 loops=1)
+  Sort Key: (sum(((oi.quantity)::numeric * oi.unit_price))) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=20777 read=7871
+  ->  GroupAggregate  (cost=29834.42..31499.40 rows=12 width=47) (actual time=54.509..60.751 rows=12 loops=1)
+        Group Key: p.category
+        Buffers: shared hit=20777 read=7871
+        ->  Gather Merge  (cost=29834.42..31337.89 rows=12909 width=25) (actual time=54.106..57.887 rows=13345 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=20777 read=7871
+              ->  Sort  (cost=28834.40..28847.85 rows=5379 width=25) (actual time=47.786..48.754 rows=4448 loops=3)
+                    Sort Key: p.category, o.order_id
+                    Sort Method: quicksort  Memory: 871kB
+                    Buffers: shared hit=20777 read=7871
+                    Worker 0:  Sort Method: quicksort  Memory: 226kB
+                    Worker 1:  Sort Method: quicksort  Memory: 210kB
+                    ->  Hash Join  (cost=159.93..28501.09 rows=5379 width=25) (actual time=1.429..44.149 rows=4448 loops=3)
+                          Hash Cond: (oi.product_id = p.product_id)
+                          Buffers: shared hit=20745 read=7871
+                          ->  Nested Loop  (cost=0.43..28327.45 rows=5379 width=22) (actual time=0.059..41.468 rows=4448 loops=3)
+                                Buffers: shared hit=20510 read=7871
+                                ->  Parallel Seq Scan on orders o  (cost=0.00..15741.33 rows=1793 width=8) (actual time=0.046..34.668 rows=1482 loops=3)
+                                      Filter: (order_date >= '2026-10-25 00:00:00'::timestamp without time zone)
+                                      Rows Removed by Filter: 331852
+                                      Buffers: shared hit=2662 read=7871
+                                ->  Index Scan using idx_order_items_order_id on order_items oi  (cost=0.43..6.99 rows=3 width=22) (actual time=0.004..0.004 rows=3 loops=4445)
+                                      Index Cond: (order_id = o.order_id)
+                                      Buffers: shared hit=17848
+                          ->  Hash  (cost=97.00..97.00 rows=5000 width=11) (actual time=1.300..1.301 rows=5000 loops=3)
+                                Buckets: 8192  Batches: 1  Memory Usage: 284kB
+                                Buffers: shared hit=141
+                                ->  Seq Scan on products p  (cost=0.00..97.00 rows=5000 width=11) (actual time=0.007..0.568 rows=5000 loops=3)
+                                      Buffers: shared hit=141
+Planning:
+  Buffers: shared hit=77
+Planning Time: 0.394 ms
+Execution Time: 60.808 ms
+

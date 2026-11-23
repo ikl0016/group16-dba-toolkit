@@ -1,0 +1,8 @@
+query_id,category,baseline_ms,optimized_ms,speedup_x,baseline_buffers,optimized_buffers,baseline_scans,optimized_scans,optimized_indexes,baseline_q_error,optimized_q_error,same_result
+Q1,Selective filter,32.422,0.014,2315.9,10418,12,Seq Scan,"Bitmap Heap Scan, Bitmap Index Scan",idx_orders_customer_id,1.67,1.22,t
+Q2,Broad filter,97.370,91.573,1.1,10346,10533,Seq Scan,Seq Scan,"",1.50,1.50,t
+Q3,Rare value + sort + LIMIT,35.238,0.020,1761.9,10418,53,Seq Scan,Index Scan,idx_orders_status_date,53.88,54.00,t
+Q4,Range filter + aggregation,36.793,4.441,8.3,10418,3929,Seq Scan,"Bitmap Heap Scan, Bitmap Index Scan",idx_orders_order_date,625.71,740.29,t
+Q5,Four-table join (selective),272.886,0.103,2649.4,32650,127,"Index Scan, Seq Scan","Bitmap Heap Scan, Bitmap Index Scan, Index Scan","customers_email_key, idx_order_items_order_id, idx_orders_customer_id, products_pkey",1.50,1.33,t
+Q6,Join + aggregation (recent window),260.273,25.734,10.1,32760,21661,Seq Scan,"Bitmap Heap Scan, Bitmap Index Scan, Index Scan, Seq Scan","idx_order_items_order_id, idx_orders_order_date",1.31,1.33,t
+Q7,Correlated predicates,64.965,62.325,1.0,11614,11772,Seq Scan,Seq Scan,"",9.66,2.00,t

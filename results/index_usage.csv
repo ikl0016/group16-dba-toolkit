@@ -1,0 +1,12 @@
+table_name,index_name,idx_scan,idx_tup_read,size_bytes,index_size,recommendation
+customers,customers_email_key,72,72,8757248,8552 kB,KEEP - enforces a constraint
+customers,customers_pkey,20096,20096,2260992,2208 kB,KEEP - enforces a constraint
+order_items,idx_order_items_order_id,107056,44593001,45326336,43 MB,KEEP - used by workload
+order_items,order_items_pkey,0,0,70098944,67 MB,KEEP - enforces a constraint
+orders,idx_orders_customer_id,152,1118670,9306112,9088 kB,KEEP - used by workload
+orders,idx_orders_order_date,112,1249120,23216128,22 MB,KEEP - used by workload
+orders,idx_orders_status,0,0,7208960,7040 kB,"DROP - unused, and its column leads a wider index"
+orders,idx_orders_status_date,8,400,41246720,39 MB,KEEP - used by workload
+orders,orders_pkey,60112,80112,23371776,22 MB,KEEP - enforces a constraint
+products,products_pkey,167472,167472,131072,128 kB,KEEP - enforces a constraint
+products,products_sku_key,0,0,180224,176 kB,KEEP - enforces a constraint

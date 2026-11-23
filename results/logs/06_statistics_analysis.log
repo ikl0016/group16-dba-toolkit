@@ -1,0 +1,131 @@
+CREATE FUNCTION
+CREATE FUNCTION
+   attname   | n_distinct | correlation |               top_values               |                  top_freqs                  
+-------------+------------+-------------+----------------------------------------+---------------------------------------------
+ customer_id |      93843 |      -0.004 |                                        | 
+ order_date  |         -1 |       0.111 |                                        | 
+ ship_city   |         40 |       0.023 | {Atlanta,Eugene,Spokane,Bend}          | {0.027,0.026966667,0.026933333,0.026666667}
+ ship_state  |          8 |       0.118 | {GA,OR,CO,WA}                          | {0.12683333,0.12673333,0.12646666,0.1258}
+ status      |          6 |       0.885 | {delivered,cancelled,returned,shipped} | {0.94086665,0.028633334,0.020566666,0.0035}
+(5 rows)
+
+CREATE TABLE
+CREATE FUNCTION
+DELETE 0
+ check_estimate 
+----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(9 rows)
+
+                        predicate                         | estimated | actual | q_error 
+----------------------------------------------------------+-----------+--------+---------
+ status = 'delivered'                                     |    957873 | 941094 |    1.02
+ status = 'pending'                                       |      3292 |   3113 |    1.06
+ status = 'cancelled'                                     |     29151 |  29562 |    1.01
+ customer_id = 4242                                       |        11 |      9 |    1.22
+ order_date >= '2026-10-01' AND order_date < '2026-10-08' |      4459 |   5019 |    1.13
+ ship_city = 'Dallas'                                     |     25418 |  25222 |    1.01
+ ship_state = 'TX'                                        |    127836 | 124399 |    1.03
+ ship_city = 'Dallas' AND ship_state = 'TX'               |      3192 |  25222 |    7.90
+ ship_city = 'Dallas' AND ship_state = 'AZ'               |      3144 |      0 | 3144.00
+(9 rows)
+
+psql:/home/claude/group16-dba-toolkit/sql/06_statistics_analysis.sql:83: NOTICE:  table "orders_stats_lab" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+INSERT 0 1000000
+CREATE INDEX
+ANALYZE
+DELETE 0
+ check_estimate 
+----------------
+ 
+(1 row)
+
+INSERT 0 150000
+ check_estimate 
+----------------
+ 
+(1 row)
+
+                                                                               QUERY PLAN                                                                                
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=5881.00..5881.05 rows=4 width=47) (actual time=101.269..101.275 rows=4 loops=1)
+   Group Key: c.loyalty_tier
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=5388
+   ->  Hash Join  (cost=3467.43..5858.57 rows=2990 width=13) (actual time=23.923..78.514 rows=153113 loops=1)
+         Hash Cond: (o.customer_id = c.customer_id)
+         Buffers: shared hit=5388
+         ->  Index Scan using orders_stats_lab_status_idx on orders_stats_lab o  (cost=0.43..2383.72 rows=2990 width=10) (actual time=0.009..18.033 rows=153113 loops=1)
+               Index Cond: (status = 'pending'::text)
+               Buffers: shared hit=4171
+         ->  Hash  (cost=2217.00..2217.00 rows=100000 width=11) (actual time=23.777..23.778 rows=100000 loops=1)
+               Buckets: 131072  Batches: 1  Memory Usage: 5377kB
+               Buffers: shared hit=1217
+               ->  Seq Scan on customers c  (cost=0.00..2217.00 rows=100000 width=11) (actual time=0.008..10.893 rows=100000 loops=1)
+                     Buffers: shared hit=1217
+ Planning:
+   Buffers: shared hit=104
+ Planning Time: 0.306 ms
+ Execution Time: 101.330 ms
+(19 rows)
+
+ANALYZE
+ check_estimate 
+----------------
+ 
+(1 row)
+
+                                                                                             QUERY PLAN                                                                                              
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=16119.95..16120.50 rows=4 width=47) (actual time=75.571..79.131 rows=4 loops=1)
+   Group Key: c.loyalty_tier
+   Buffers: shared hit=5514
+   ->  Gather Merge  (cost=16119.95..16120.41 rows=4 width=47) (actual time=75.556..79.112 rows=8 loops=1)
+         Workers Planned: 1
+         Workers Launched: 1
+         Buffers: shared hit=5514
+         ->  Sort  (cost=15119.94..15119.95 rows=4 width=47) (actual time=73.048..73.052 rows=4 loops=2)
+               Sort Key: c.loyalty_tier
+               Sort Method: quicksort  Memory: 25kB
+               Buffers: shared hit=5514
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               ->  Partial HashAggregate  (cost=15119.85..15119.90 rows=4 width=47) (actual time=73.024..73.029 rows=4 loops=2)
+                     Group Key: c.loyalty_tier
+                     Batches: 1  Memory Usage: 24kB
+                     Buffers: shared hit=5506
+                     Worker 0:  Batches: 1  Memory Usage: 24kB
+                     ->  Parallel Hash Join  (cost=2540.96..14459.11 rows=88099 width=13) (actual time=19.180..56.953 rows=76556 loops=2)
+                           Hash Cond: (o.customer_id = c.customer_id)
+                           Buffers: shared hit=5506
+                           ->  Parallel Index Scan using orders_stats_lab_status_idx on orders_stats_lab o  (cost=0.43..11687.30 rows=88099 width=10) (actual time=0.045..12.661 rows=76556 loops=2)
+                                 Index Cond: (status = 'pending'::text)
+                                 Buffers: shared hit=4275
+                           ->  Parallel Hash  (cost=1805.24..1805.24 rows=58824 width=11) (actual time=18.662..18.663 rows=50000 loops=2)
+                                 Buckets: 131072  Batches: 1  Memory Usage: 5760kB
+                                 Buffers: shared hit=1217
+                                 ->  Parallel Seq Scan on customers c  (cost=0.00..1805.24 rows=58824 width=11) (actual time=0.008..6.455 rows=50000 loops=2)
+                                       Buffers: shared hit=1217
+ Planning:
+   Buffers: shared hit=6
+ Planning Time: 0.185 ms
+ Execution Time: 79.178 ms
+(32 rows)
+
+        check_label        | estimated | actual | q_error 
+---------------------------+-----------+--------+---------
+ stale_1_fresh_stats       |      2633 |   3113 |    1.18
+ stale_2_after_bulk_insert |      2990 | 153113 |   51.21
+ stale_3_after_analyze     |    149768 | 153113 |    1.02
+(3 rows)
+
+DROP TABLE

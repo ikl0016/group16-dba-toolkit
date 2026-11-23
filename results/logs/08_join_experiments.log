@@ -1,0 +1,53 @@
+DELETE 0
+ query_id | median_exec_ms |                                node_types                                
+----------+----------------+--------------------------------------------------------------------------
+ Q5       |          0.167 | {"Bitmap Heap Scan","Bitmap Index Scan","Index Scan","Nested Loop",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                           node_types                           
+----------+----------------+----------------------------------------------------------------
+ Q5       |        279.297 | {"Gather Merge",Hash,"Hash Join","Index Scan","Seq Scan",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                         node_types                         
+----------+----------------+------------------------------------------------------------
+ Q5       |        355.489 | {"Gather Merge","Index Scan","Merge Join","Seq Scan",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                                                          node_types                                                           
+----------+----------------+-------------------------------------------------------------------------------------------------------------------------------
+ Q6       |         34.521 | {Aggregate,"Bitmap Heap Scan","Bitmap Index Scan","Gather Merge",Hash,"Hash Join","Index Scan","Nested Loop","Seq Scan",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                                             node_types                                             
+----------+----------------+----------------------------------------------------------------------------------------------------
+ Q6       |        255.443 | {Aggregate,"Bitmap Heap Scan","Bitmap Index Scan","Gather Merge",Hash,"Hash Join","Seq Scan",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                                                 node_types                                                  
+----------+----------------+-------------------------------------------------------------------------------------------------------------
+ Q6       |        360.010 | {Aggregate,"Bitmap Heap Scan","Bitmap Index Scan","Gather Merge","Index Scan","Merge Join","Seq Scan",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                                            node_types                                             
+----------+----------------+---------------------------------------------------------------------------------------------------
+ Q6       |         43.965 | {Aggregate,"Bitmap Heap Scan","Bitmap Index Scan","Gather Merge","Index Scan","Nested Loop",Sort}
+(1 row)
+
+ query_id | median_exec_ms |                                node_types                                
+----------+----------------+--------------------------------------------------------------------------
+ Q5       |          0.113 | {"Bitmap Heap Scan","Bitmap Index Scan","Index Scan","Nested Loop",Sort}
+(1 row)
+
+      run_label      | query_id | median_exec_ms |       join_nodes       
+---------------------+----------+----------------+------------------------
+ join_planner_choice | Q5       |          0.167 | Nested Loop
+ join_force_hash     | Q5       |        279.297 | Hash Join
+ join_force_merge    | Q5       |        355.489 | Merge Join
+ join_fixed_order    | Q5       |          0.113 | Nested Loop
+ join_planner_choice | Q6       |         34.521 | Hash Join, Nested Loop
+ join_force_hash     | Q6       |        255.443 | Hash Join
+ join_force_merge    | Q6       |        360.010 | Merge Join
+ join_force_nestloop | Q6       |         43.965 | Nested Loop
+(8 rows)
+

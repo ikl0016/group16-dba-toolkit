@@ -1,0 +1,40 @@
+Gather Merge  (cost=57706.05..57708.85 rows=24 width=46) (actual time=277.592..277.824 rows=25 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=12125 read=21844
+  ->  Sort  (cost=56706.03..56706.06 rows=12 width=46) (actual time=269.241..269.274 rows=8 loops=3)
+        Sort Key: o.order_date DESC, oi.order_item_id
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=12125 read=21844
+        Worker 0:  Sort Method: quicksort  Memory: 26kB
+        Worker 1:  Sort Method: quicksort  Memory: 25kB
+        ->  Hash Join  (cost=16240.35..56705.81 rows=12 width=46) (actual time=157.676..269.227 rows=8 loops=3)
+              Hash Cond: (oi.product_id = p.product_id)
+              Buffers: shared hit=12095 read=21844
+              ->  Parallel Hash Join  (cost=16080.85..56546.28 rows=12 width=38) (actual time=154.871..266.401 rows=8 loops=3)
+                    Hash Cond: (oi.order_id = o.order_id)
+                    Buffers: shared hit=11860 read=21844
+                    ->  Parallel Seq Scan on order_items oi  (cost=0.00..35686.00 rows=1274500 width=30) (actual time=0.032..99.344 rows=1000000 loops=3)
+                          Buffers: shared hit=1097 read=21844
+                    ->  Parallel Hash  (cost=16080.80..16080.80 rows=4 width=16) (actual time=65.463..65.483 rows=3 loops=3)
+                          Buckets: 1024  Batches: 1  Memory Usage: 104kB
+                          Buffers: shared hit=10733
+                          ->  Hash Join  (cost=8.45..16080.80 rows=4 width=16) (actual time=13.333..65.337 rows=3 loops=3)
+                                Hash Cond: (o.customer_id = c.customer_id)
+                                Buffers: shared hit=10733
+                                ->  Parallel Seq Scan on orders o  (cost=0.00..14959.25 rows=424025 width=20) (actual time=0.008..31.344 rows=333333 loops=3)
+                                      Buffers: shared hit=10719
+                                ->  Hash  (cost=8.44..8.44 rows=1 width=4) (actual time=0.027..0.029 rows=1 loops=3)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=14
+                                      ->  Index Scan using customers_email_key on customers c  (cost=0.42..8.44 rows=1 width=4) (actual time=0.024..0.025 rows=1 loops=3)
+                                            Index Cond: (email = 'customer4242@example.com'::text)
+                                            Buffers: shared hit=14
+              ->  Hash  (cost=97.00..97.00 rows=5000 width=16) (actual time=2.724..2.732 rows=5000 loops=3)
+                    Buckets: 8192  Batches: 1  Memory Usage: 315kB
+                    Buffers: shared hit=141
+                    ->  Seq Scan on products p  (cost=0.00..97.00 rows=5000 width=16) (actual time=0.012..0.476 rows=5000 loops=3)
+                          Buffers: shared hit=141
+Planning Time: 0.248 ms
+Execution Time: 277.893 ms
+

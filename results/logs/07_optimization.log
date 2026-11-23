@@ -1,0 +1,99 @@
+DELETE 0
+DELETE 0
+CREATE INDEX
+ANALYZE
+ query_id | median_exec_ms | root_node |       indexes_used       
+----------+----------------+-----------+--------------------------
+ Q1       |          0.012 | Sort      | {idx_orders_customer_id}
+(1 row)
+
+ query_id | median_exec_ms |  root_node   |                        indexes_used                        
+----------+----------------+--------------+------------------------------------------------------------
+ Q5       |        199.805 | Gather Merge | {customers_email_key,idx_orders_customer_id,products_pkey}
+(1 row)
+
+CREATE INDEX
+ANALYZE
+ query_id | median_exec_ms | root_node |                                    indexes_used                                     
+----------+----------------+-----------+-------------------------------------------------------------------------------------
+ Q5       |          0.090 | Sort      | {customers_email_key,idx_order_items_order_id,idx_orders_customer_id,products_pkey}
+(1 row)
+
+ query_id | median_exec_ms | root_node |        indexes_used        
+----------+----------------+-----------+----------------------------
+ Q6       |         53.816 | Sort      | {idx_order_items_order_id}
+(1 row)
+
+CREATE INDEX
+ANALYZE
+ query_id | median_exec_ms | root_node |      indexes_used       
+----------+----------------+-----------+-------------------------
+ Q4       |          7.730 | Aggregate | {idx_orders_order_date}
+(1 row)
+
+ query_id | median_exec_ms | root_node |                   indexes_used                   
+----------+----------------+-----------+--------------------------------------------------
+ Q6       |         30.530 | Sort      | {idx_order_items_order_id,idx_orders_order_date}
+(1 row)
+
+ query_id | median_exec_ms | root_node |      indexes_used       
+----------+----------------+-----------+-------------------------
+ Q3       |        462.650 | Limit     | {idx_orders_order_date}
+(1 row)
+
+CREATE INDEX
+ANALYZE
+ query_id | median_exec_ms | root_node | indexes_used 
+----------+----------------+-----------+--------------
+ Q2       |        108.538 | Aggregate | 
+(1 row)
+
+ query_id | median_exec_ms | root_node |      indexes_used       
+----------+----------------+-----------+-------------------------
+ Q3       |        478.068 | Limit     | {idx_orders_order_date}
+(1 row)
+
+CREATE INDEX
+ANALYZE
+ query_id | median_exec_ms | root_node |       indexes_used       
+----------+----------------+-----------+--------------------------
+ Q3       |          0.020 | Limit     | {idx_orders_status_date}
+(1 row)
+
+CREATE STATISTICS
+ANALYZE
+ query_id | median_exec_ms | root_node | max_q_error 
+----------+----------------+-----------+-------------
+ Q7       |         63.847 | Aggregate |        2.00
+(1 row)
+
+DELETE 0
+ check_estimate 
+----------------
+ 
+ 
+(2 rows)
+
+VACUUM
+VACUUM
+ pg_stat_reset 
+---------------
+ 
+(1 row)
+
+ query_id | median_exec_ms | root_node |                                    indexes_used                                     
+----------+----------------+-----------+-------------------------------------------------------------------------------------
+ Q1       |          0.014 | Sort      | {idx_orders_customer_id}
+ Q2       |         91.573 | Aggregate | 
+ Q3       |          0.020 | Limit     | {idx_orders_status_date}
+ Q4       |          4.441 | Aggregate | {idx_orders_order_date}
+ Q5       |          0.103 | Sort      | {customers_email_key,idx_order_items_order_id,idx_orders_customer_id,products_pkey}
+ Q6       |         25.734 | Sort      | {idx_order_items_order_id,idx_orders_order_date}
+ Q7       |         62.325 | Aggregate | 
+(7 rows)
+
+ insert_ms_optimized 
+---------------------
+          852.613000
+(1 row)
+

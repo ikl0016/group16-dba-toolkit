@@ -1,0 +1,34 @@
+Finalize GroupAggregate  (cost=20303.36..20303.88 rows=4 width=15) (actual time=60.812..63.733 rows=4 loops=1)
+  Group Key: c.loyalty_tier
+  Buffers: shared hit=11772
+  ->  Gather Merge  (cost=20303.36..20303.82 rows=4 width=15) (actual time=60.803..63.716 rows=8 loops=1)
+        Workers Planned: 1
+        Workers Launched: 1
+        Buffers: shared hit=11772
+        ->  Sort  (cost=19303.35..19303.36 rows=4 width=15) (actual time=58.583..58.588 rows=4 loops=2)
+              Sort Key: c.loyalty_tier
+              Sort Method: quicksort  Memory: 25kB
+              Buffers: shared hit=11772
+              Worker 0:  Sort Method: quicksort  Memory: 25kB
+              ->  Partial HashAggregate  (cost=19303.27..19303.31 rows=4 width=15) (actual time=58.562..58.567 rows=4 loops=2)
+                    Group Key: c.loyalty_tier
+                    Batches: 1  Memory Usage: 24kB
+                    Buffers: shared hit=11764
+                    Worker 0:  Batches: 1  Memory Usage: 24kB
+                    ->  Parallel Hash Join  (cost=16917.55..19227.29 rows=15196 width=7) (actual time=42.413..56.711 rows=12611 loops=2)
+                          Hash Cond: (c.customer_id = o.customer_id)
+                          Buffers: shared hit=11764
+                          ->  Parallel Seq Scan on customers c  (cost=0.00..1805.24 rows=58824 width=11) (actual time=0.003..3.428 rows=50000 loops=2)
+                                Buffers: shared hit=1217
+                          ->  Parallel Hash  (cost=16783.00..16783.00 rows=10764 width=4) (actual time=42.122..42.123 rows=12611 loops=2)
+                                Buckets: 32768  Batches: 1  Memory Usage: 1280kB
+                                Buffers: shared hit=10533
+                                ->  Parallel Seq Scan on orders o  (cost=0.00..16783.00 rows=10764 width=4) (actual time=0.011..39.042 rows=12611 loops=2)
+                                      Filter: ((ship_city = 'Dallas'::text) AND (ship_state = 'TX'::bpchar))
+                                      Rows Removed by Filter: 487389
+                                      Buffers: shared hit=10533
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.256 ms
+Execution Time: 63.774 ms
+

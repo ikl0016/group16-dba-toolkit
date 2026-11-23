@@ -1,0 +1,11 @@
+psql:/home/claude/group16-dba-toolkit/sql/03_toolkit.sql:19: NOTICE:  schema "toolkit" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE VIEW
+CREATE TABLE
+CREATE FUNCTION

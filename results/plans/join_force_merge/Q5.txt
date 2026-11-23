@@ -1,0 +1,61 @@
+Gather Merge  (cost=142962.15..142964.95 rows=24 width=46) (actual time=345.822..347.731 rows=25 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=133753 read=33421 written=1
+  ->  Sort  (cost=141962.13..141962.16 rows=12 width=46) (actual time=319.446..319.453 rows=8 loops=3)
+        Sort Key: o.order_date DESC, oi.order_item_id
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=133753 read=33421 written=1
+        Worker 0:  Sort Method: quicksort  Memory: 26kB
+        Worker 1:  Sort Method: quicksort  Memory: 25kB
+        ->  Merge Join  (cost=141936.74..141961.92 rows=12 width=46) (actual time=319.134..319.408 rows=8 loops=3)
+              Merge Cond: (oi.product_id = p.product_id)
+              Buffers: shared hit=133734 read=33416 written=1
+              ->  Sort  (cost=141532.54..141532.57 rows=12 width=38) (actual time=317.593..317.599 rows=8 loops=3)
+                    Sort Key: oi.product_id
+                    Sort Method: quicksort  Memory: 25kB
+                    Buffers: shared hit=133640 read=33369 written=1
+                    Worker 0:  Sort Method: quicksort  Memory: 26kB
+                    Worker 1:  Sort Method: quicksort  Memory: 25kB
+                    ->  Merge Join  (cost=65242.14..141532.33 rows=12 width=38) (actual time=250.055..317.572 rows=8 loops=3)
+                          Merge Cond: (oi.order_id = o.order_id)
+                          Buffers: shared hit=133632 read=33369 written=1
+                          ->  Parallel Index Scan using idx_order_items_order_id on order_items oi  (cost=0.43..73115.43 rows=1274500 width=30) (actual time=0.023..181.827 rows=842166 loops=3)
+                                Buffers: shared hit=3911 read=23085 written=1
+                          ->  Sort  (cost=65238.06..65238.08 rows=10 width=16) (actual time=62.284..62.299 rows=14 loops=3)
+                                Sort Key: o.order_id
+                                Sort Method: quicksort  Memory: 25kB
+                                Buffers: shared hit=129721 read=10284
+                                Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                ->  Merge Join  (cost=9.58..65237.89 rows=10 width=16) (actual time=62.257..62.271 rows=9 loops=3)
+                                      Merge Cond: (o.customer_id = c.customer_id)
+                                      Buffers: shared hit=129721 read=10284
+                                      ->  Index Scan using idx_orders_customer_id on orders o  (cost=0.42..62685.19 rows=1017659 width=20) (actual time=0.036..57.201 rows=42712 loops=3)
+                                            Buffers: shared hit=129712 read=10279
+                                      ->  Sort  (cost=8.45..8.45 rows=1 width=4) (actual time=0.024..0.026 rows=1 loops=3)
+                                            Sort Key: c.customer_id
+                                            Sort Method: quicksort  Memory: 25kB
+                                            Buffers: shared hit=9 read=5
+                                            Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                            Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                            ->  Index Scan using customers_email_key on customers c  (cost=0.42..8.44 rows=1 width=4) (actual time=0.019..0.020 rows=1 loops=3)
+                                                  Index Cond: (email = 'customer4242@example.com'::text)
+                                                  Buffers: shared hit=9 read=5
+              ->  Sort  (cost=404.19..416.69 rows=5000 width=16) (actual time=1.262..1.459 rows=4895 loops=3)
+                    Sort Key: p.product_id
+                    Sort Method: quicksort  Memory: 419kB
+                    Buffers: shared hit=94 read=47
+                    Worker 0:  Sort Method: quicksort  Memory: 419kB
+                    Worker 1:  Sort Method: quicksort  Memory: 419kB
+                    ->  Seq Scan on products p  (cost=0.00..97.00 rows=5000 width=16) (actual time=0.029..0.434 rows=5000 loops=3)
+                          Buffers: shared hit=94 read=47
+Planning:
+  Buffers: shared hit=109 read=140 dirtied=1
+Planning Time: 0.950 ms
+JIT:
+  Functions: 78
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 2.428 ms, Inlining 0.000 ms, Optimization 5.891 ms, Emission 46.821 ms, Total 55.141 ms
+Execution Time: 348.775 ms
+

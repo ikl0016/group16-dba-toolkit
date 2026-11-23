@@ -1,0 +1,54 @@
+ pg_stat_force_next_flush 
+--------------------------
+ 
+(1 row)
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+ table_name  | seq_scan | seq_tup_read | idx_scan | idx_tup_fetch | n_live_tup | table_size 
+-------------+----------+--------------+----------+---------------+------------+------------
+ customers   |       24 |      1187634 |    20168 |         20072 |          0 | 9776 kB
+ order_items |       48 |     48000000 |   107056 |      44532895 |          0 | 179 MB
+ orders      |       74 |     29376322 |    60384 |       1374864 |          0 | 84 MB
+ products    |      125 |       625000 |   167472 |        167360 |          0 | 416 kB
+(4 rows)
+
+ table_name  |        index_name        | idx_scan | idx_tup_read | index_size 
+-------------+--------------------------+----------+--------------+------------
+ customers   | customers_email_key      |       72 |           72 | 8552 kB
+ customers   | customers_pkey           |    20096 |        20096 | 2208 kB
+ order_items | idx_order_items_order_id |   107056 |     44593001 | 43 MB
+ order_items | order_items_pkey         |        0 |            0 | 67 MB
+ orders      | idx_orders_customer_id   |      152 |      1118670 | 9088 kB
+ orders      | idx_orders_order_date    |      112 |      1249120 | 22 MB
+ orders      | idx_orders_status        |        0 |            0 | 7040 kB
+ orders      | idx_orders_status_date   |        8 |          400 | 39 MB
+ orders      | orders_pkey              |    60112 |        80112 | 22 MB
+ products    | products_pkey            |   167472 |       167472 | 128 kB
+ products    | products_sku_key         |        0 |            0 | 176 kB
+(11 rows)
+
+ table_name  |        index_name        | idx_scan | index_size |                  recommendation                   
+-------------+--------------------------+----------+------------+---------------------------------------------------
+ customers   | customers_email_key      |       72 | 8552 kB    | KEEP - enforces a constraint
+ customers   | customers_pkey           |    20096 | 2208 kB    | KEEP - enforces a constraint
+ order_items | idx_order_items_order_id |   107056 | 43 MB      | KEEP - used by workload
+ order_items | order_items_pkey         |        0 | 67 MB      | KEEP - enforces a constraint
+ orders      | idx_orders_customer_id   |      152 | 9088 kB    | KEEP - used by workload
+ orders      | idx_orders_order_date    |      112 | 22 MB      | KEEP - used by workload
+ orders      | idx_orders_status        |        0 | 7040 kB    | DROP - unused, and its column leads a wider index
+ orders      | idx_orders_status_date   |        8 | 39 MB      | KEEP - used by workload
+ orders      | orders_pkey              |    60112 | 22 MB      | KEEP - enforces a constraint
+ products    | products_pkey            |   167472 | 128 kB     | KEEP - enforces a constraint
+ products    | products_sku_key         |        0 | 176 kB     | KEEP - enforces a constraint
+(11 rows)
+
+ added_index_storage | base_table_storage 
+---------------------+--------------------
+ 120 MB              | 263 MB
+(1 row)
+
+psql:/home/claude/group16-dba-toolkit/sql/09_index_monitoring.sql:85: NOTICE:  table "index_usage_snapshot" does not exist, skipping
+DROP TABLE
+SELECT 11

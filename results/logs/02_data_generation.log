@@ -1,0 +1,24 @@
+ setseed 
+---------
+ 
+(1 row)
+
+SELECT 1
+INSERT 0 100000
+INSERT 0 5000
+INSERT 0 1000000
+INSERT 0 3000000
+UPDATE 1000000
+VACUUM
+VACUUM
+ANALYZE
+ANALYZE
+ANALYZE
+ table_name  | row_count 
+-------------+-----------
+ customers   |    100000
+ products    |      5000
+ orders      |   1000000
+ order_items |   3000000
+(4 rows)
+

@@ -1,0 +1,113 @@
+psql:/home/claude/group16-dba-toolkit/sql/10_validation.sql:10: NOTICE:  table "test_results" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+CREATE FUNCTION
+CREATE VIEW
+CREATE VIEW
+ record_test 
+-------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(7 rows)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+DO
+ record_test 
+-------------
+ 
+(1 row)
+
+DROP INDEX
+ query_id | median_exec_ms |       indexes_used       
+----------+----------------+--------------------------
+ Q3       |          0.021 | {idx_orders_status_date}
+(1 row)
+
+ record_test 
+-------------
+ 
+(1 row)
+
+ test_id |      module       |                                          test_name                                          |                                                                                                           actual                                                                                                            | status 
+---------+-------------------+---------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------
+ T01     | Integration       | Q1 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T02     | Integration       | Q2 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T03     | Integration       | Q3 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T04     | Integration       | Q4 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T05     | Integration       | Q5 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T06     | Integration       | Q6 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T07     | Integration       | Q7 returns identical result set after tuning                                                | identical                                                                                                                                                                                                                   | PASS
+ T08     | Tuning validation | Q1/Q3/Q4/Q5/Q6 use the index built for them                                                 | Q1=idx_orders_customer_id; Q3=idx_orders_status_date; Q4=idx_orders_order_date; Q5=customers_email_key, idx_order_items_order_id, idx_orders_customer_id, products_pkey; Q6=idx_order_items_order_id, idx_orders_order_date | PASS
+ T09     | Tuning validation | Targeted queries are at least 2x faster (median of 5 warm runs)                             | Q1=2315.9x, Q3=1761.9x, Q4=8.3x, Q5=2649.4x, Q6=10.1x                                                                                                                                                                       | PASS
+ T10     | Tuning validation | Targeted queries read fewer buffers (less I/O work)                                         | Q1: 10418->12, Q3: 10418->53, Q4: 10418->3929, Q5: 32650->127, Q6: 32760->21661                                                                                                                                             | PASS
+ T11     | Planner behavior  | Q2 (94% of rows) still uses a sequential scan although idx_orders_status exists             | Seq Scan / indexes: none                                                                                                                                                                                                    | PASS
+ T12     | Statistics        | Extended statistics fix the Dallas/TX row estimate                                          | before 7.90, after 1.01                                                                                                                                                                                                     | PASS
+ T13     | Statistics        | ANALYZE repairs stale estimates after a 150k-row bulk insert                                | stale 51.21, after ANALYZE 1.02                                                                                                                                                                                             | PASS
+ T14     | Tuning validation | Step-wise testing exposes the Q3 regression from idx_orders_order_date and step 4b fixes it | baseline 35.238 ms, step3 462.650 ms, step4b 0.020 ms                                                                                                                                                                       | PASS
+ T15     | Monitoring        | Monitoring flags idx_orders_status as unused/redundant                                      | idx_scan=0, DROP - unused, and its column leads a wider index                                                                                                                                                               | PASS
+ T16     | Integration       | CHECK rejects invalid status                                                                | rejected (check_violation)                                                                                                                                                                                                  | PASS
+ T17     | Integration       | FOREIGN KEY rejects orphan order item                                                       | rejected (foreign_key_violation)                                                                                                                                                                                            | PASS
+ T18     | Integration       | Dataset has the designed volume                                                             | customers=100000, products=5000, orders=1000000, order_items=3000000                                                                                                                                                        | PASS
+ T19     | Monitoring        | Unused index removed and Q3 still uses the composite index                                  | idx_orders_status_date                                                                                                                                                                                                      | PASS
+(19 rows)
+
+ passed | total 
+--------+-------
+     19 |    19
+(1 row)
+
+ query_id |              category              | baseline_ms | optimized_ms | speedup_x | baseline_buffers | optimized_buffers |    baseline_scans    |                      optimized_scans                      |                                  optimized_indexes                                   | baseline_q_error | optimized_q_error | same_result 
+----------+------------------------------------+-------------+--------------+-----------+------------------+-------------------+----------------------+-----------------------------------------------------------+--------------------------------------------------------------------------------------+------------------+-------------------+-------------
+ Q1       | Selective filter                   |      32.422 |        0.014 |    2315.9 |            10418 |                12 | Seq Scan             | Bitmap Heap Scan, Bitmap Index Scan                       | idx_orders_customer_id                                                               |             1.67 |              1.22 | t
+ Q2       | Broad filter                       |      97.370 |       91.573 |       1.1 |            10346 |             10533 | Seq Scan             | Seq Scan                                                  |                                                                                      |             1.50 |              1.50 | t
+ Q3       | Rare value + sort + LIMIT          |      35.238 |        0.020 |    1761.9 |            10418 |                53 | Seq Scan             | Index Scan                                                | idx_orders_status_date                                                               |            53.88 |             54.00 | t
+ Q4       | Range filter + aggregation         |      36.793 |        4.441 |       8.3 |            10418 |              3929 | Seq Scan             | Bitmap Heap Scan, Bitmap Index Scan                       | idx_orders_order_date                                                                |           625.71 |            740.29 | t
+ Q5       | Four-table join (selective)        |     272.886 |        0.103 |    2649.4 |            32650 |               127 | Index Scan, Seq Scan | Bitmap Heap Scan, Bitmap Index Scan, Index Scan           | customers_email_key, idx_order_items_order_id, idx_orders_customer_id, products_pkey |             1.50 |              1.33 | t
+ Q6       | Join + aggregation (recent window) |     260.273 |       25.734 |      10.1 |            32760 |             21661 | Seq Scan             | Bitmap Heap Scan, Bitmap Index Scan, Index Scan, Seq Scan | idx_order_items_order_id, idx_orders_order_date                                      |             1.31 |              1.33 | t
+ Q7       | Correlated predicates              |      64.965 |       62.325 |       1.0 |            11614 |             11772 | Seq Scan             | Seq Scan                                                  |                                                                                      |             9.66 |              2.00 | t
+(7 rows)
+

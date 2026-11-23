@@ -1,0 +1,40 @@
+Gather Merge  (cost=41091.66..41094.69 rows=26 width=46) (actual time=197.185..198.550 rows=25 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=1400 read=21355
+  ->  Sort  (cost=40091.64..40091.67 rows=13 width=46) (actual time=191.431..191.438 rows=8 loops=3)
+        Sort Key: o.order_date DESC, oi.order_item_id
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=1400 read=21355
+        Worker 0:  Sort Method: quicksort  Memory: 25kB
+        Worker 1:  Sort Method: quicksort  Memory: 26kB
+        ->  Nested Loop  (cost=56.53..40091.39 rows=13 width=46) (actual time=85.402..191.402 rows=8 loops=3)
+              Buffers: shared hit=1370 read=21355
+              ->  Hash Join  (cost=56.25..40087.49 rows=13 width=38) (actual time=85.352..191.298 rows=8 loops=3)
+                    Hash Cond: (oi.order_id = o.order_id)
+                    Buffers: shared hit=1293 read=21355
+                    ->  Parallel Seq Scan on order_items oi  (cost=0.00..35249.90 rows=1274990 width=30) (actual time=0.014..101.965 rows=1000000 loops=3)
+                          Buffers: shared hit=1145 read=21355
+                    ->  Hash  (cost=56.13..56.13 rows=10 width=16) (actual time=0.066..0.069 rows=9 loops=3)
+                          Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                          Buffers: shared hit=52
+                          ->  Nested Loop  (cost=4.93..56.13 rows=10 width=16) (actual time=0.049..0.064 rows=9 loops=3)
+                                Buffers: shared hit=52
+                                ->  Index Scan using customers_email_key on customers c  (cost=0.42..8.44 rows=1 width=4) (actual time=0.026..0.027 rows=1 loops=3)
+                                      Index Cond: (email = 'customer4242@example.com'::text)
+                                      Buffers: shared hit=14
+                                ->  Bitmap Heap Scan on orders o  (cost=4.51..47.58 rows=11 width=20) (actual time=0.020..0.032 rows=9 loops=3)
+                                      Recheck Cond: (c.customer_id = customer_id)
+                                      Heap Blocks: exact=9
+                                      Buffers: shared hit=38
+                                      ->  Bitmap Index Scan on idx_orders_customer_id  (cost=0.00..4.51 rows=11 width=0) (actual time=0.015..0.016 rows=9 loops=3)
+                                            Index Cond: (customer_id = c.customer_id)
+                                            Buffers: shared hit=11
+              ->  Index Scan using products_pkey on products p  (cost=0.28..0.30 rows=1 width=16) (actual time=0.010..0.010 rows=1 loops=25)
+                    Index Cond: (product_id = oi.product_id)
+                    Buffers: shared hit=77
+Planning:
+  Buffers: shared hit=82
+Planning Time: 0.445 ms
+Execution Time: 198.599 ms
+

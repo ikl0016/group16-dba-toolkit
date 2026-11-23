@@ -1,0 +1,8 @@
+Limit  (cost=0.42..96.80 rows=50 width=20) (actual time=0.004..0.016 rows=50 loops=1)
+  Buffers: shared hit=53
+  ->  Index Scan using idx_orders_status_date on orders  (cost=0.42..7068.82 rows=3667 width=20) (actual time=0.004..0.013 rows=50 loops=1)
+        Index Cond: (status = 'pending'::text)
+        Buffers: shared hit=53
+Planning Time: 0.015 ms
+Execution Time: 0.021 ms
+

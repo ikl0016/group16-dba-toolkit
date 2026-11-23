@@ -1,0 +1,8 @@
+psql:/home/claude/group16-dba-toolkit/sql/01_schema.sql:18: NOTICE:  schema "shop" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE VIEW

@@ -1,0 +1,3 @@
+psql:/home/claude/group16-dba-toolkit/sql/04_workload.sql:8: NOTICE:  truncate cascades to table "perf_results"
+TRUNCATE TABLE
+INSERT 0 7

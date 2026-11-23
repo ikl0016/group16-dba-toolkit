@@ -1,0 +1,19 @@
+Limit  (cost=16599.10..16604.94 rows=50 width=20) (actual time=41.619..41.689 rows=50 loops=1)
+  Buffers: shared hit=2376 read=8042
+  ->  Gather Merge  (cost=16599.10..16913.43 rows=2694 width=20) (actual time=41.618..41.683 rows=50 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=2376 read=8042
+        ->  Sort  (cost=15599.08..15602.45 rows=1347 width=20) (actual time=36.028..36.036 rows=40 loops=3)
+              Sort Key: order_date
+              Sort Method: top-N heapsort  Memory: 31kB
+              Buffers: shared hit=2376 read=8042
+              Worker 0:  Sort Method: top-N heapsort  Memory: 31kB
+              Worker 1:  Sort Method: top-N heapsort  Memory: 31kB
+              ->  Parallel Seq Scan on orders  (cost=0.00..15554.33 rows=1347 width=20) (actual time=0.047..35.804 rows=1038 loops=3)
+                    Filter: (status = 'pending'::text)
+                    Rows Removed by Filter: 332296
+                    Buffers: shared hit=2304 read=8042
+Planning Time: 0.066 ms
+Execution Time: 41.707 ms
+

@@ -1,0 +1,23 @@
+Finalize GroupAggregate  (cost=17699.44..18268.57 rows=4380 width=48) (actual time=34.623..36.042 rows=7 loops=1)
+  Group Key: (date_trunc('day'::text, order_date))
+  Buffers: shared hit=3144 read=7274
+  ->  Gather Merge  (cost=17699.44..18166.37 rows=3650 width=48) (actual time=34.519..36.002 rows=21 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=3144 read=7274
+        ->  Partial GroupAggregate  (cost=16699.42..16745.04 rows=1825 width=48) (actual time=29.297..29.522 rows=7 loops=3)
+              Group Key: (date_trunc('day'::text, order_date))
+              Buffers: shared hit=3144 read=7274
+              ->  Sort  (cost=16699.42..16703.98 rows=1825 width=14) (actual time=29.246..29.339 rows=1673 loops=3)
+                    Sort Key: (date_trunc('day'::text, order_date))
+                    Sort Method: quicksort  Memory: 200kB
+                    Buffers: shared hit=3144 read=7274
+                    Worker 0:  Sort Method: quicksort  Memory: 95kB
+                    Worker 1:  Sort Method: quicksort  Memory: 94kB
+                    ->  Parallel Seq Scan on orders  (cost=0.00..16600.56 rows=1825 width=14) (actual time=0.921..28.857 rows=1673 loops=3)
+                          Filter: ((order_date >= '2026-10-01 00:00:00'::timestamp without time zone) AND (order_date < '2026-10-08 00:00:00'::timestamp without time zone))
+                          Rows Removed by Filter: 331660
+                          Buffers: shared hit=3072 read=7274
+Planning Time: 0.122 ms
+Execution Time: 36.090 ms
+

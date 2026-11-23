@@ -1,0 +1,19 @@
+GroupAggregate  (cost=9319.71..9449.26 rows=5182 width=48) (actual time=3.750..4.341 rows=7 loops=1)
+  Group Key: (date_trunc('day'::text, order_date))
+  Buffers: shared hit=3929
+  ->  Sort  (cost=9319.71..9332.67 rows=5182 width=14) (actual time=3.634..3.852 rows=5019 loops=1)
+        Sort Key: (date_trunc('day'::text, order_date))
+        Sort Method: quicksort  Memory: 389kB
+        Buffers: shared hit=3929
+        ->  Bitmap Heap Scan on orders  (cost=113.54..9000.00 rows=5182 width=14) (actual time=0.807..3.162 rows=5019 loops=1)
+              Recheck Cond: ((order_date >= '2026-10-01 00:00:00'::timestamp without time zone) AND (order_date < '2026-10-08 00:00:00'::timestamp without time zone))
+              Heap Blocks: exact=3913
+              Buffers: shared hit=3929
+              ->  Bitmap Index Scan on idx_orders_order_date  (cost=0.00..112.24 rows=5182 width=0) (actual time=0.357..0.357 rows=5019 loops=1)
+                    Index Cond: ((order_date >= '2026-10-01 00:00:00'::timestamp without time zone) AND (order_date < '2026-10-08 00:00:00'::timestamp without time zone))
+                    Buffers: shared hit=16
+Planning:
+  Buffers: shared hit=4
+Planning Time: 0.078 ms
+Execution Time: 4.362 ms
+
